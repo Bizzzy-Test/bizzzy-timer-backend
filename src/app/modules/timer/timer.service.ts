@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Timer } from './timer.model';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import { ITimer } from './timer.interface';
+import { uploadFile } from '../../middlewares/aws/aws';
 
 const formatDuration = (milliseconds: number): string => {
   const minutes = Math.floor(milliseconds / 60000);
@@ -68,9 +71,41 @@ const stopTimer = async (userId: string): Promise<ITimer> => {
   }
 };
 
+// upload screenshot
+const uploadScreenshot = async (userId: string, jobId: string, file: any): Promise<ITimer> => {
+  try {
+    const screenshotUrl = await uploadFile(
+      file.buffer,
+      file.originalname,
+      file.mimetype,
+      'timer_screenshots'
+    );
+
+    console.log(screenshotUrl);
+
+    // Find the active timer and add the screenshot URL
+    const todayStart = new Date().setHours(0, 0, 0, 0);
+
+    const timer = await Timer.findOneAndUpdate(
+      { userId, jobId, date: { $gte: todayStart }, isActive: true },
+      { $push: { file: screenshotUrl } },
+      { new: true }
+    );
+
+    if (!timer) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'No active timer found');
+    }
+
+    return timer;
+  } catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
+  }
+
+};
+
 
 // get today timer report for specific user and specific job
- 
+
 const todayTimerReport = async (data: any): Promise<ITimer[]> => {
   try {
     const { userId, jobId } = data;
@@ -109,6 +144,7 @@ const todayTimerReport = async (data: any): Promise<ITimer[]> => {
 export const timerService = {
   startTimer,
   stopTimer,
-  todayTimerReport
+  todayTimerReport,
+  uploadScreenshot
 };
 

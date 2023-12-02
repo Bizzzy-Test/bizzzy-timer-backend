@@ -5,6 +5,7 @@ import httpStatus from 'http-status';
 import { ITimer } from './timer.interface';
 import { timerService } from './timer.service';
 
+
 const StartTimer: RequestHandler = catchAsync(async (req: Request, res: Response) => {
   const userId = req?.body?.userId;
   const result = await timerService.startTimer(userId);
@@ -27,14 +28,28 @@ const StopTimer: RequestHandler = catchAsync(async (req: Request, res: Response)
   });
 });
 
+// upload screenshot
+const UploadScreenshot: RequestHandler = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.body.userId;
+  const jobId = req.body.jobId;
+  const file = req.file;
+
+  const result = await timerService.uploadScreenshot(userId, jobId, file);
+
+  sendResponse<ITimer>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'screenshot upload successfully!',
+    data: result,
+  });
+});
+
 // today timer report for specific user and specific job
 
 const TodayTimerReport: RequestHandler = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
-
   const result = await timerService.todayTimerReport(data);
-  
-  sendResponse<ITimer[]>(res, {  
+  sendResponse<ITimer[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'today timer report successfully!',
@@ -48,4 +63,5 @@ export const TimerController = {
   StartTimer,
   StopTimer,
   TodayTimerReport,
+  UploadScreenshot
 };

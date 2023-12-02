@@ -1,6 +1,6 @@
 import express from 'express';
 import { TimerController } from './timer.controller';
-// import validateRequest from '../../middlewares/validateRequest';
+import { upload } from '../../middlewares/multer/multer';
 const router = express.Router();
 
 router.post(
@@ -16,6 +16,12 @@ router.post(
 router.get(
     '/todayTimerReport',
     TimerController.TodayTimerReport
+);
+
+router.post(
+    '/uploadScreenshot',
+    upload.single("file"),
+    TimerController.UploadScreenshot
 );
 
 
