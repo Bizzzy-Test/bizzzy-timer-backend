@@ -32,9 +32,13 @@ const StopTimer: RequestHandler = catchAsync(async (req: Request, res: Response)
 const UploadScreenshot: RequestHandler = catchAsync(async (req: Request, res: Response) => {
   const userId = req.body.userId;
   const jobId = req.body.jobId;
-  const file = req.file;
+  const file = req?.file;
+
+  console.log(file, "file")
 
   const result = await timerService.uploadScreenshot(userId, jobId, file);
+
+  console.log(result)
 
   sendResponse<ITimer>(res, {
     statusCode: httpStatus.OK,
