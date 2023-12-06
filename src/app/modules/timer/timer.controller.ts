@@ -33,26 +33,14 @@ const StopTimer: RequestHandler = catchAsync(async (req: Request, res: Response)
  
 const UploadScreenshot: RequestHandler = catchAsync(async (req: Request, res: Response) => {
   const timerData = req.body;
-
   let fileUrl;
-
   if (req.file) {
     const fileBuffer = req.file.buffer;
     const folderName = "timer_screenshots";
     fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
   }
-
-  // Safely set the file URL in timerData
   timerData.file = fileUrl || "null";
-
-  // Properly log the object and file URL
-  console.log(  'File URL:', fileUrl);
-
-  // Other console.log statements
-  console.log(req.file, "file");
-
   const result = await timerService.uploadScreenshot(timerData);
- 
 
   sendResponse<ITimer>(res, {
     statusCode: httpStatus.OK,
