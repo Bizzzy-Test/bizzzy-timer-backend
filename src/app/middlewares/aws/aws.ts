@@ -8,25 +8,27 @@ import config from "../../../config";
 const s3 = new S3Client({
   credentials: {
     accessKeyId: config.aws.access_key!,
-    secretAccessKey: config.aws.access_key!,
+    secretAccessKey: config.aws.secret_key!,
   },
   region: config.aws.region,
 });
 
 const uploadFile = async (fileBuffer: Buffer, originalname: string, contentType: string, folderName: string): Promise<string> => {
-  const fileStream = fs.createReadStream(fileBuffer as unknown as fs.PathLike);
-  const key = `${folderName}/${uuidv4()}-${originalname}`;
+  const safeName = originalname.replace(/\s/g, '_');
+
+  const key = `${folderName}/${uuidv4()}-${safeName}`;
+  console.log(key, "key+++")
   const uploadParams = {
     Bucket: config.aws.bucket_name,
-    Body: fileStream,
+    Body: fileBuffer,
     ContentType: contentType,
-    Key: key
+    Key: key,
   };
 
   try {
     const command = new PutObjectCommand(uploadParams);
     await s3.send(command);
-    const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`;
+    const fileUrl = `https://${config.aws.bucket_name}.s3.amazonaws.com/${key}`;
     return fileUrl;
   } catch (error) {
     logger.error("Error uploading file to S3:", error);
@@ -36,7 +38,7 @@ const uploadFile = async (fileBuffer: Buffer, originalname: string, contentType:
 
 const deleteFile = async (key: string): Promise<void> => {
   const deleteParams = {
-    Bucket:config.aws.bucket_name,
+    Bucket: config.aws.bucket_name,
     Key: key,
   };
 
@@ -49,7 +51,8 @@ const deleteFile = async (key: string): Promise<void> => {
   }
 }
 
+
 export {
   uploadFile,
   deleteFile
-};
+}

@@ -4,7 +4,6 @@ import { ITimer, TimerModel } from './timer.interface';
 const TimerSchema = new Schema<ITimer, TimerModel>({
   userId: {
     type: String,
-    required: true,
   },
   jobId: {
     type: String,
@@ -27,11 +26,9 @@ const TimerSchema = new Schema<ITimer, TimerModel>({
   date: {
     type: Date,
   },
-  file: [
-    {
-      type: String,
-    }
-  ],
+  file: {
+    type: String
+  },
   refarence: {
     type: String,
   },

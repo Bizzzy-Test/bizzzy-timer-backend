@@ -4,6 +4,7 @@ import sendResponse from '../../../shared/sendResponse';
 import httpStatus from 'http-status';
 import { ITimer } from './timer.interface';
 import { timerService } from './timer.service';
+import { uploadFile } from '../../middlewares/aws/aws';
 
 
 const StartTimer: RequestHandler = catchAsync(async (req: Request, res: Response) => {
@@ -29,24 +30,38 @@ const StopTimer: RequestHandler = catchAsync(async (req: Request, res: Response)
 });
 
 // upload screenshot
+ 
 const UploadScreenshot: RequestHandler = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.body.userId;
-  const jobId = req.body.jobId;
-  const file = req?.file;
+  const timerData = req.body;
 
-  console.log(file, "file")
+  let fileUrl;
 
-  const result = await timerService.uploadScreenshot(userId, jobId, file);
+  if (req.file) {
+    const fileBuffer = req.file.buffer;
+    const folderName = "timer_screenshots";
+    fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
+  }
 
-  console.log(result)
+  // Safely set the file URL in timerData
+  timerData.file = fileUrl || "null";
+
+  // Properly log the object and file URL
+  console.log(  'File URL:', fileUrl);
+
+  // Other console.log statements
+  console.log(req.file, "file");
+
+  const result = await timerService.uploadScreenshot(timerData);
+ 
 
   sendResponse<ITimer>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'screenshot upload successfully!',
+    message: 'Screenshot uploaded successfully!',
     data: result,
   });
 });
+
 
 // today timer report for specific user and specific job
 

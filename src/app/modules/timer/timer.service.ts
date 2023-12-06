@@ -72,35 +72,16 @@ const stopTimer = async (userId: string): Promise<ITimer> => {
 };
 
 // upload screenshot
-const uploadScreenshot = async (userId: string, jobId: string, file: any): Promise<ITimer> => {
+const uploadScreenshot = async (payload: string): Promise<ITimer> => {
   try {
-    const screenshotUrl = await uploadFile(
-      file.buffer,
-      file.originalname,
-      file.mimetype,
-      'timer_screenshots'
-    );
+    console.log(payload, "payload++++++++")
 
-    console.log(screenshotUrl);
-
-    // Find the active timer and add the screenshot URL
-    const todayStart = new Date().setHours(0, 0, 0, 0);
-
-    const timer = await Timer.findOneAndUpdate(
-      { userId, jobId, date: { $gte: todayStart }, isActive: true },
-      { $push: { file: screenshotUrl } },
-      { new: true }
-    );
-
-    if (!timer) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'No active timer found');
-    }
-
-    return timer;
+    const timerSceenshot = new Timer(payload);
+    const data = await timerSceenshot.save();
+    return data;
   } catch (error) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
   }
-
 };
 
 

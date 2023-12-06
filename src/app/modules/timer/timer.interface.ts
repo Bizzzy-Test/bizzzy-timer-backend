@@ -11,7 +11,7 @@ export type ITimer = {
   amount: number;
   limite: number;
   date: Date;
-  file: string[];
+  file: string;
   refarence: string;
   isActive: boolean;
 };
