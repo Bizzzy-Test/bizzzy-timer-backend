@@ -45,44 +45,44 @@ const userSchema = new Schema<IUser, UserModel>({
     country: {
         type: String,
     },
-    socialLogins: [socialLoginSchema],
-    emailVerificationToken: {
+    social_logins: [socialLoginSchema],
+    email_verification_token: {
         type: String
     },
-    isEmailVerified: {
+    is_email_verified: {
         type: Boolean,
         default: false
     },
-    sendPromoEmails: {
+    send_promo_emails: {
         type: Boolean,
         default: false
     },
-    hasAcceptedTerms: {
+    has_accepted_terms: {
         type: Boolean,
         default: false
     },
-    dateRegistered: {
+    date_registered: {
         type: Date,
         default: Date.now
     },
-    passwordResetToken: {
+    password_reset_token: {
         token: String,
         expires: Date
     },
-    lastLogin: {
+    last_login: {
         type: Date
     },
-    createdAt: {
+    created_at: {
         type: Date,
         required: true,
         default: Date.now
     },
-    updatedAt: {
+    updated_at: {
         type: Date,
         required: true,
         default: Date.now
     },
-    isDeleted: {
+    is_deleted: {
         type: Boolean,
         default: false
     },

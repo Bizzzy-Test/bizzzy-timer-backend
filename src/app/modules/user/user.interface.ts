@@ -13,20 +13,20 @@ export type IUser = {
     password: string;
     role: ENUM_USER_ROLE;
     country?: string;
-    socialLogins: ISocialLogin[];
-    emailVerificationToken?: string;
-    isEmailVerified: boolean;
-    sendPromoEmails: boolean;
-    hasAcceptedTerms: boolean;
-    dateRegistered: Date;
-    passwordResetToken?: {
+    social_logins: ISocialLogin[];
+    email_verification_token?: string;
+    is_email_verified: boolean;
+    send_promo_emails: boolean;
+    has_accepted_terms: boolean;
+    date_registered: Date;
+    password_reset_token?: {
         token: string;
         expires: Date;
     };
-    lastLogin?: Date;
-    createdAt: Date;
-    updatedAt: Date;
-    isDeleted: boolean;
+    last_login: Date;
+    created_at: Date;
+    updated_at: Date;
+    is_deleted: boolean;
     status: number;
 }
 
