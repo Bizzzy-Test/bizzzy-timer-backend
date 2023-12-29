@@ -7,7 +7,7 @@ import { jobService } from './job.service';
 
 
 const getJobs: RequestHandler = catchAsync(async (req: Request, res: Response) => {
-    const response = await jobService.getJobs(req.user?._id, res);
+    const response = await jobService.getJobs(req.user?.id, res);    
     sendResponse<any>(res, {
     statusCode: httpStatus.OK,
     success: true,
