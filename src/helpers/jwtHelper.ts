@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
+import { AuthPayload } from '../interfaces/auth';
 
 const createToken = (
   payload: Record<string, unknown>,
@@ -11,8 +12,8 @@ const createToken = (
   });
 };
 
-const verifyToken = (token: string, secret: Secret): JwtPayload => {
-  return jwt.verify(token, secret) as JwtPayload;
+const verifyToken = (token: string, secret: Secret): AuthPayload => {
+  return jwt.verify(token, secret) as AuthPayload;
 };
 
 export const jwtHelper = {

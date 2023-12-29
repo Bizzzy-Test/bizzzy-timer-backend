@@ -33,6 +33,7 @@ function generateToken(user: User, rememberMe: boolean): string {
 
 // Assuming req, res, and next have the types from Express
 import { Request, Response, NextFunction } from 'express';
+import { AuthPayload } from '../../../interfaces/auth';
 
 function validateToken(req: Request, res: Response, next: NextFunction, userToken: string = ''): void {
     try {
@@ -43,9 +44,9 @@ function validateToken(req: Request, res: Response, next: NextFunction, userToke
 
         const token = req.header('token') || userToken;
         if (token) {
-            const verified = jwt.verify(token, jwtSecretKey) as { id?: string, userId?: string };
+            const verified = jwt.verify(token, jwtSecretKey) as AuthPayload ;
             if (verified) {
-                req["userId"] = verified.id ?? verified.userId ?? "";
+                req.user = verified;
                 next();
             } else {
                 res.status(401).send(responseData.unauthorized);
