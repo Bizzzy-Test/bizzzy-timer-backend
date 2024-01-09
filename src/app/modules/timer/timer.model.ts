@@ -1,34 +1,40 @@
 import { Schema, model } from 'mongoose';
-import { ITimer, TimerModel } from './timer.interface';
+import { ITimer, TimerModel, ITimerFile } from './timer.interface';
+import { Types } from 'mongoose';
+
+const TimerFileSchema = new Schema<ITimerFile>({
+  _id: Schema.Types.ObjectId,
+  image_url: {
+    type: String
+  },
+  created_at: Number
+})
 
 const TimerSchema = new Schema<ITimer, TimerModel>({
-  userId: {
-    type: String,
+  freelancerId: {
+    type: Schema.Types.ObjectId,
+    // required: true,
   },
   jobId: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    // required: true,
   },
   startTime: [{
     type: Date,
+    // required: true
   }],
   endTime: [{
     type: Date,
+    // required: true
   }],
-  duration: {
-    type: String,
-  },
-  amount: {
+  limit: {
     type: Number,
   },
-  limite: {
-    type: Number,
-  },
-  date: {
+  start_date: {
     type: Date,
+    // required: true
   },
-  file: {
-    type: String
-  },
+  files: [TimerFileSchema],
   refarence: {
     type: String,
   },
@@ -37,6 +43,7 @@ const TimerSchema = new Schema<ITimer, TimerModel>({
     default: false,
   },
 });
+
 
 export const Timer = model<ITimer, TimerModel>('Timer', TimerSchema);
 
