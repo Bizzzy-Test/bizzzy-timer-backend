@@ -8,15 +8,15 @@ router.post(
     TimerController.StartTimer
 );
 
-router.post(
-    '/stop',
-    TimerController.StopTimer
-);
+// router.post(
+//     '/stop',
+//     TimerController.StopTimer
+// );
 
-router.get(
-    '/todayTimerReport',
-    TimerController.TodayTimerReport
-);
+// router.get(
+//     '/todayTimerReport',
+//     TimerController.TodayTimerReport
+// );
 
 router.post(
     '/uploadScreenshot',

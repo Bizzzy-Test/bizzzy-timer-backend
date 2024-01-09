@@ -3,7 +3,7 @@
 import { ObjectId } from 'bson';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
-import OfferSchema from '../../modles/offer.model';
+import OfferSchema from '../../models/offer.model';
 
 const getJobs = async (userId: string, res: any): Promise<any> => {
   try {

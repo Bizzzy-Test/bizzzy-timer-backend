@@ -18,16 +18,16 @@ const StartTimer: RequestHandler = catchAsync(async (req: Request, res: Response
   });
 });
 
-const StopTimer: RequestHandler = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.body.userId;
-  const result = await timerService.stopTimer(userId);
-  sendResponse<ITimer>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'timer stop successfully!',
-    data: result,
-  });
-});
+// const StopTimer: RequestHandler = catchAsync(async (req: Request, res: Response) => {
+//   const userId = req.body.userId;
+//   const result = await timerService.stopTimer(userId);
+//   sendResponse<ITimer>(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'timer stop successfully!',
+//     data: result,
+//   });
+// });
 
 // upload screenshot
  
@@ -53,22 +53,22 @@ const UploadScreenshot: RequestHandler = catchAsync(async (req: Request, res: Re
 
 // today timer report for specific user and specific job
 
-const TodayTimerReport: RequestHandler = catchAsync(async (req: Request, res: Response) => {
-  const data = req.body;
-  const result = await timerService.todayTimerReport(data);
-  sendResponse<ITimer[]>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'today timer report successfully!',
-    data: result,
-  });
-});
+// const TodayTimerReport: RequestHandler = catchAsync(async (req: Request, res: Response) => {
+//   const data = req.body;
+//   const result = await timerService.todayTimerReport(data);
+//   sendResponse<ITimer[]>(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'today timer report successfully!',
+//     data: result,
+//   });
+// });
 
 
 
 export const TimerController = {
   StartTimer,
-  StopTimer,
-  TodayTimerReport,
+  // StopTimer,
+  // TodayTimerReport,
   UploadScreenshot
 };
