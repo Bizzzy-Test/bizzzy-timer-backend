@@ -1,9 +1,10 @@
+import { ObjectId } from 'bson';
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Timer } from './timer.model';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiError';
 import { ITimer } from './timer.interface';
+import { Timer } from './timer.model';
 // import { uploadFile } from '../../middlewares/aws/aws';
 
 const formatDuration = (milliseconds: number): string => {
@@ -13,20 +14,38 @@ const formatDuration = (milliseconds: number): string => {
   return `${hours} hrs ${mins} min`;
 };
 
-const startTimer = async (userId: string): Promise<ITimer> => {
+const startTimer = async (userId: string, body: any): Promise<ITimer|any> => {
   try {
-    const todayStart = new Date().setHours(0, 0, 0, 0);
-    let timer = await Timer.findOne({ userId: userId, date: { $gte: todayStart } });
+    let {job_id, client_id} = body
+    let timer = await Timer.findOne({ job_id, freelancer_id: userId, client_id});
 
-    if (!timer) {
-      timer = new Timer({ userId, startTime: [new Date()], isActive: true });
+    if (!timer){
+      // create Object in timer
+      let saveObject = {
+        job_id,
+        freelancer_id: userId,
+        client_id,
+        timer: [{
+          start_time: Date.now()
+        }],
+        screenshots: [],
+        start_date: new Date().setHours(0, 0, 0, 0)
+      }
+      timer = new Timer(saveObject);
+      await timer.save();
+      return null;
     } else {
-      // timer.startTime.push(new Date());
-      // timer.isActive = true;
+      const updatedTimer = await Timer.updateOne(
+        {job_id: new ObjectId(job_id), freelancer_id: new ObjectId(userId), client_id: new ObjectId(client_id)},
+        { 
+            $push: { timer:  {
+              start_time: Date.now()
+            } }
+        },
+        { new: true, upsert: false } // options
+      );
+      return null;
     }
-
-    await timer.save();
-    return timer;
   } catch (error) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
   }

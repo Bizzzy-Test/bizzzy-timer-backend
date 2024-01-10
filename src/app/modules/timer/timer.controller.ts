@@ -8,9 +8,10 @@ import { uploadFile } from '../../middlewares/aws/aws';
 
 
 const StartTimer: RequestHandler = catchAsync(async (req: Request, res: Response) => {
-  const userId = req?.body?.userId;
-  const result = await timerService.startTimer(userId);
-  sendResponse<ITimer>(res, {
+  const userId = req?.user?.id;
+  const body = req?.body;
+  const result = await timerService.startTimer(userId, body);
+  sendResponse<ITimer| any>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'timer start successfully!',
