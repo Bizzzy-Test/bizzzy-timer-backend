@@ -10,6 +10,12 @@ router.post(
     TimerController.StartTimer
 );
 
+router.post(
+    '/end',
+    validateToken,
+    TimerController.EndTimer
+);
+
 // router.post(
 //     '/stop',
 //     TimerController.StopTimer

@@ -19,6 +19,18 @@ const StartTimer: RequestHandler = catchAsync(async (req: Request, res: Response
   });
 });
 
+const EndTimer: RequestHandler = catchAsync(async (req: Request, res: Response) => {
+  const userId = req?.user?.id;
+  const body = req?.body;
+  const result = await timerService.endTimer(userId, body);
+  sendResponse<ITimer| any>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'timer start successfully!',
+    data: result,
+  });
+});
+
 // const StopTimer: RequestHandler = catchAsync(async (req: Request, res: Response) => {
 //   const userId = req.body.userId;
 //   const result = await timerService.stopTimer(userId);
@@ -69,6 +81,7 @@ const UploadScreenshot: RequestHandler = catchAsync(async (req: Request, res: Re
 
 export const TimerController = {
   StartTimer,
+  EndTimer,
   // StopTimer,
   // TodayTimerReport,
   UploadScreenshot

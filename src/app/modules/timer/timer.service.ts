@@ -52,6 +52,25 @@ const startTimer = async (userId: string, body: any): Promise<ITimer|any> => {
 };
 
 
+const endTimer = async (userId: string, body: any): Promise<ITimer|any> => {
+  try {
+    let {job_id, client_id} = body
+
+      const updatedTimer = await Timer.updateOne(
+        {job_id: new ObjectId(job_id), freelancer_id: new ObjectId(userId), client_id: new ObjectId(client_id), "timer.end_time": null},
+        { $set: { "timer.$[elem].end_time": Date.now() } }, 
+        {
+            arrayFilters: [{ "elem.end_time": null }], 
+            multi: true,
+            new: true, upsert: false
+        }
+      );
+      return null;
+    } catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
+  }
+};
+
 // const stopTimer = async (userId: string): Promise<ITimer> => {
 //   try {
 //     const todayStart = new Date().setHours(0, 0, 0, 0);
@@ -143,6 +162,7 @@ const uploadScreenshot = async (payload: string): Promise<ITimer> => {
 
 export const timerService = {
   startTimer,
+  endTimer,
   // stopTimer,
   // todayTimerReport,
   uploadScreenshot
