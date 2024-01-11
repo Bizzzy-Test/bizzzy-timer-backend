@@ -3,22 +3,24 @@ import { Model, Types } from 'mongoose';
 export type ITimer = {
   save(): unknown;
   toObject(): ITimer;
-  freelancerId: Types.ObjectId;
-  jobId: Types.ObjectId;
-  startTime: Number;
-  time: [];
-  endTime: Number;
-  limit: number;
+  freelancer_id: Types.ObjectId;
+  job_id: Types.ObjectId;
+  client_id: Types.ObjectId;
   start_date: Date;
-  files: ITimerFile[];
-  refarence: string;
-  isActive: boolean;
+  timer: ITimerFile[];
+  screenshots: IScreenShotFile[];
 };
 
 export type ITimerFile = {
   _id: Types.ObjectId,
+  start_time: string,
+  end_time: string
+}
+
+export type IScreenShotFile = {
+  _id: Types.ObjectId,
   image_url: string,
-  created_at: Number
+  created_at: Date
 }
 
 export type TimerModel = Model<ITimer, Record<string, unknown>>;
