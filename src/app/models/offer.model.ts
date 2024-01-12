@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 // Define an interface representing a document in MongoDB.
 interface IOffer {
-    freelencer_id: mongoose.Types.ObjectId;
+    freelancer_id: mongoose.Types.ObjectId;
     client_id: mongoose.Types.ObjectId;
     job_id: mongoose.Types.ObjectId;
     status: number;
@@ -13,7 +13,7 @@ interface IOffer {
 
 // Create a Schema corresponding to the document interface.
 const OfferSchema = new mongoose.Schema<IOffer>({
-    freelencer_id: {
+    freelancer_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'freelencer_profiles',
         required: true,

@@ -10,7 +10,7 @@ const getJobs = async (userId: string, res: any): Promise<any> => {
     const query = [
         {
             $match: {
-                freelencer_id: new ObjectId(userId),
+                freelancer_id: new ObjectId(userId),
                 status: "accepted"
             }
         },
