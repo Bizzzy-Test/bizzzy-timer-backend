@@ -18,14 +18,16 @@ export type ITimerFile = {
 }
 
 export type IScreenShotFile = {
-  image_url: string,
+  _id?: Types.ObjectId,
+  image_url?: string,
+  created_at?: Date
 }
 
 export type IUploadFile={
-  freelancer_id: Types.ObjectId,
-  job_id: Types.ObjectId,
-  file: string,
-  upload_date: Date
+  freelancer_id?: Types.ObjectId,
+  job_id?: Types.ObjectId,
+  file?: string,
+
 }
 
 export type TimerModel = Model<ITimer, Record<string, unknown>>;

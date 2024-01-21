@@ -82,17 +82,18 @@ const endTimer = async (userId: string, body: any): Promise<ITimer | any> => {
         upsert: false,
       }
     );
+
     return null;
   } catch (error) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
   }
 };
 
-// ==== upload image {by ashim rudra paul}
+// ==== upload image  
 const uploadScreenshot = async (
   payload: IUploadFile,
   freelancer_id: string
-): Promise<ITimer> => {
+): Promise<ITimer | any> => {
   try {
     const image_url = payload.file;
     const jobId = payload.job_id;
@@ -109,16 +110,66 @@ const uploadScreenshot = async (
       );
     }
 
-    const startTime = existingTimer.start_date;
-    if (!startTime) {
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+    const timerStartDate = existingTimer.start_date?.setHours(0, 0, 0, 0);
+
+    if (!timerStartDate) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Timer start date not found');
     }
 
-    existingTimer.screenshots.push({
-      image_url: image_url,
+    if (currentDate === timerStartDate) {
+      existingTimer.screenshots.push({
+        image_url: image_url,
+      });
+      const updatedTimer = await existingTimer.save();
+      return updatedTimer;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
+  }
+};
+
+// ==== Get Daily Report 
+const getDailyReport = async (
+  freelancer_id: string,
+  job_id: string
+): Promise<ITimer | any> => {
+  try {
+    const existingTimer = await Timer.findOne({
+      job_id: new ObjectId(job_id),
+      freelancer_id: new ObjectId(freelancer_id),
     });
-    const updatedTimer = await existingTimer.save();
-    return updatedTimer;
+
+    if (!existingTimer) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Timer not found for the specified job and freelancer'
+      );
+    }
+
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+    const timerStartDate = existingTimer.start_date?.setHours(0, 0, 0, 0);
+
+    if (!timerStartDate) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Timer start date not found');
+    }
+
+    if (currentDate === timerStartDate) {
+      const todayTotalTime = existingTimer.timer.reduce((total, timerEntry) => {
+        const startTime = Number(timerEntry.start_time);
+        const endTime = Number(timerEntry.end_time);
+        const timeDifference = endTime - startTime;
+        return total + timeDifference;
+      }, 0);
+
+      return {
+        todayTotalTime,
+      };
+    } else {
+      return null;
+    }
   } catch (error) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
   }
@@ -128,4 +179,5 @@ export const timerService = {
   startTimer,
   endTimer,
   uploadScreenshot,
+  getDailyReport,
 };
