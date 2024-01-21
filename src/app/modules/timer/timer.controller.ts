@@ -31,21 +31,11 @@ const EndTimer: RequestHandler = catchAsync(async (req: Request, res: Response) 
   });
 });
 
-// const StopTimer: RequestHandler = catchAsync(async (req: Request, res: Response) => {
-//   const userId = req.body.userId;
-//   const result = await timerService.stopTimer(userId);
-//   sendResponse<ITimer>(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'timer stop successfully!',
-//     data: result,
-//   });
-// });
+// ==== upload image {by ashim rudra paul}
 
-// upload screenshot
- 
 const UploadScreenshot: RequestHandler = catchAsync(async (req: Request, res: Response) => {
   const timerData = req.body;
+  const freelancer_id = req.user.id
   let fileUrl;
   if (req.file) {
     const fileBuffer = req.file.buffer;
@@ -53,7 +43,8 @@ const UploadScreenshot: RequestHandler = catchAsync(async (req: Request, res: Re
     fileUrl = await uploadFile(fileBuffer, req.file.originalname, req.file.mimetype, folderName);
   }
   timerData.file = fileUrl || "null";
-  const result = await timerService.uploadScreenshot(timerData);
+  
+  const result = await timerService.uploadScreenshot(timerData, freelancer_id);
 
   sendResponse<ITimer>(res, {
     statusCode: httpStatus.OK,
@@ -63,26 +54,8 @@ const UploadScreenshot: RequestHandler = catchAsync(async (req: Request, res: Re
   });
 });
 
-
-// today timer report for specific user and specific job
-
-// const TodayTimerReport: RequestHandler = catchAsync(async (req: Request, res: Response) => {
-//   const data = req.body;
-//   const result = await timerService.todayTimerReport(data);
-//   sendResponse<ITimer[]>(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'today timer report successfully!',
-//     data: result,
-//   });
-// });
-
-
-
 export const TimerController = {
   StartTimer,
   EndTimer,
-  // StopTimer,
-  // TodayTimerReport,
   UploadScreenshot
 };
