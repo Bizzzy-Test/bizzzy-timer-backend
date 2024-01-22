@@ -16,9 +16,9 @@ const getJobs = async (userId: string, res: any): Promise<any> => {
         },
         {
             $lookup: {
-                from: 'jobs',
+                from: 'offers',
                 localField: 'job_id',
-                foreignField: '_id',
+                foreignField: 'job_id',
                 as: 'job_details'
             }
         },
