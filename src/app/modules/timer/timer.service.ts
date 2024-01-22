@@ -14,13 +14,67 @@ const formatDuration = (milliseconds: number): string => {
   return `${hours} hrs ${mins} min`;
 };
 
+// const startTimer = async (userId: string, body: any): Promise<ITimer | any> => {
+//   try {
+//     let { job_id, client_id } = body;
+//     let timer = await Timer.findOne({
+//       job_id,
+//       freelancer_id: userId,
+//       client_id,
+//     });
+
+//     if (!timer) {
+//       // create Object in timer
+//       let saveObject = {
+//         job_id,
+//         freelancer_id: userId,
+//         client_id,
+//         timer: [
+//           {
+//             start_time: Date.now(),
+//           },
+//         ],
+//         screenshots: [],
+//         start_date: new Date().setHours(0, 0, 0, 0),
+//       };
+//       timer = new Timer(saveObject);
+//       await timer.save();
+//       return null;
+//     } else {
+//       const updatedTimer = await Timer.updateOne(
+//         {
+//           job_id: new ObjectId(job_id),
+//           freelancer_id: new ObjectId(userId),
+//           client_id: new ObjectId(client_id),
+//         },
+//         {
+//           $push: {
+//             timer: {
+//               start_time: Date.now(),
+//             },
+//           },
+//         },
+//         { new: true, upsert: false } // options
+//       );
+//       return null;
+//     }
+//   } catch (error) {
+//     throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
+//   }
+// };
+
 const startTimer = async (userId: string, body: any): Promise<ITimer | any> => {
   try {
     let { job_id, client_id } = body;
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
     let timer = await Timer.findOne({
       job_id,
       freelancer_id: userId,
       client_id,
+      start_date: startOfDay,
     });
 
     if (!timer) {
@@ -35,7 +89,7 @@ const startTimer = async (userId: string, body: any): Promise<ITimer | any> => {
           },
         ],
         screenshots: [],
-        start_date: new Date().setHours(0, 0, 0, 0),
+        start_date: startOfDay,
       };
       timer = new Timer(saveObject);
       await timer.save();
@@ -46,6 +100,7 @@ const startTimer = async (userId: string, body: any): Promise<ITimer | any> => {
           job_id: new ObjectId(job_id),
           freelancer_id: new ObjectId(userId),
           client_id: new ObjectId(client_id),
+          start_date: startOfDay,
         },
         {
           $push: {
@@ -62,6 +117,7 @@ const startTimer = async (userId: string, body: any): Promise<ITimer | any> => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
   }
 };
+
 
 const endTimer = async (userId: string, body: any): Promise<ITimer | any> => {
   try {
@@ -174,6 +230,11 @@ const getDailyReport = async (
     throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
   }
 };
+
+// ==== Get The Weekly Report 
+
+
+
 
 export const timerService = {
   startTimer,
