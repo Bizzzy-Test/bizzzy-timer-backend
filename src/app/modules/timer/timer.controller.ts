@@ -98,10 +98,28 @@ const getWeeklyReport: RequestHandler = catchAsync(
   }
 );
 
+// ==== Get Monthly Report
+const getMonthlyReport: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const freelancer_id = req.user.id;
+    const job_id = req.params.job_id;
+
+    const result = await timerService.getMonthlyReport(freelancer_id, job_id);
+    sendResponse<ITimer>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Monthly Report Fetch Successfully!',
+      data: result,
+    }); 
+  }
+);
+
+
 export const TimerController = {
   StartTimer,
   EndTimer,
   UploadScreenshot,
   getDailyReport,
-  getWeeklyReport
+  getWeeklyReport,
+  getMonthlyReport
 };

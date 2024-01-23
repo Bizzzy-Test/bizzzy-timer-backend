@@ -248,18 +248,17 @@ const getWeeklyReport = async (
       );
     }
 
-    // Step 02: Get the week data
     const currentDate = new Date();
-    const currentDay = currentDate.getDay(); 
+    const currentDay = currentDate.getDay();
     const startOfWeek = new Date(currentDate);
-    startOfWeek.setDate(currentDate.getDate() - currentDay);  
+    startOfWeek.setDate(currentDate.getDate() - currentDay);
     startOfWeek.setHours(0, 0, 0, 0);
 
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); 
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
     endOfWeek.setHours(23, 59, 59, 999);
- 
-    const timerEntriesInWeek = existingTimer.filter((timerEntry) => {
+
+    const timerEntriesInWeek = existingTimer.filter(timerEntry => {
       const entryStartDate = new Date(timerEntry.start_date);
       return entryStartDate >= startOfWeek && entryStartDate <= endOfWeek;
     });
@@ -273,15 +272,70 @@ const getWeeklyReport = async (
 
       return total + duration;
     }, 0);
- 
+
     return {
       totalWeekTime,
     };
-
   } catch (error) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
   }
 };
+
+// ==== Get The Monthly Report
+const getMonthlyReport = async (
+  freelancer_id: string,
+  job_id: string
+): Promise<ITimer | any> => {
+  try {
+    const existingTimer = await Timer.find({
+      job_id: new ObjectId(job_id),
+      freelancer_id: new ObjectId(freelancer_id),
+    });
+
+    if (!existingTimer || existingTimer.length === 0) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Timer not found for the specified job and freelancer'
+      );
+    }
+
+    const currentDate = new Date();
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0
+    );
+    startOfMonth.setHours(0, 0, 0, 0);
+    endOfMonth.setHours(23, 59, 59, 999);
+
+    const timerEntriesInMonth = existingTimer.filter(timerEntry => {
+      const entryStartDate = new Date(timerEntry.start_date);
+      return entryStartDate >= startOfMonth && entryStartDate <= endOfMonth;
+    });
+
+    const totalMonthTime = timerEntriesInMonth.reduce((total, timerEntry) => {
+      const duration = timerEntry.timer.reduce((entryTotal, entry) => {
+        const startTime = Number(entry.start_time);
+        const endTime = Number(entry.end_time);
+        return entryTotal + (endTime - startTime);
+      }, 0);
+
+      return total + duration;
+    }, 0);
+
+    return {
+      totalMonthTime,
+    };
+  } catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
+  }
+};
+
 
 
 export const timerService = {
@@ -290,4 +344,5 @@ export const timerService = {
   uploadScreenshot,
   getDailyReport,
   getWeeklyReport,
+  getMonthlyReport,
 };
