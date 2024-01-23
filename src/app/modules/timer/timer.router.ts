@@ -9,6 +9,7 @@ router.post('/start', validateToken, TimerController.StartTimer);
 router.post('/end', validateToken, TimerController.EndTimer);
 
 router.get('/:job_id/daily_report', validateToken, TimerController.getDailyReport)
+router.get('/:job_id/weekly_report', validateToken, TimerController.getWeeklyReport)
 
 router.post(
   '/uploadScreenshot',
