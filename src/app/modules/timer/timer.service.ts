@@ -118,7 +118,6 @@ const startTimer = async (userId: string, body: any): Promise<ITimer | any> => {
   }
 };
 
-
 const endTimer = async (userId: string, body: any): Promise<ITimer | any> => {
   try {
     let { job_id, client_id } = body;
@@ -145,7 +144,7 @@ const endTimer = async (userId: string, body: any): Promise<ITimer | any> => {
   }
 };
 
-// ==== upload image  
+// ==== upload image
 const uploadScreenshot = async (
   payload: IUploadFile,
   freelancer_id: string
@@ -187,7 +186,7 @@ const uploadScreenshot = async (
   }
 };
 
-// ==== Get Daily Report 
+// ==== Get Daily Report
 const getDailyReport = async (
   freelancer_id: string,
   job_id: string
@@ -231,8 +230,111 @@ const getDailyReport = async (
   }
 };
 
-// ==== Get The Weekly Report 
+// ==== Get The Weekly Report
+const getWeeklyReport = async (
+  freelancer_id: string,
+  job_id: string
+): Promise<ITimer | any> => {
+  try {
+    const existingTimer = await Timer.find({
+      job_id: new ObjectId(job_id),
+      freelancer_id: new ObjectId(freelancer_id),
+    });
 
+    if (!existingTimer || existingTimer.length === 0) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Timer not found for the specified job and freelancer'
+      );
+    }
+
+    const currentDate = new Date();
+    const currentDay = currentDate.getDay();
+    const startOfWeek = new Date(currentDate);
+    startOfWeek.setDate(currentDate.getDate() - currentDay);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const timerEntriesInWeek = existingTimer.filter(timerEntry => {
+      const entryStartDate = new Date(timerEntry.start_date);
+      return entryStartDate >= startOfWeek && entryStartDate <= endOfWeek;
+    });
+
+    const totalWeekTime = timerEntriesInWeek.reduce((total, timerEntry) => {
+      const duration = timerEntry.timer.reduce((entryTotal, entry) => {
+        const startTime = Number(entry.start_time);
+        const endTime = Number(entry.end_time);
+        return entryTotal + (endTime - startTime);
+      }, 0);
+
+      return total + duration;
+    }, 0);
+
+    return {
+      totalWeekTime,
+    };
+  } catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
+  }
+};
+
+// ==== Get The Monthly Report
+const getMonthlyReport = async (
+  freelancer_id: string,
+  job_id: string
+): Promise<ITimer | any> => {
+  try {
+    const existingTimer = await Timer.find({
+      job_id: new ObjectId(job_id),
+      freelancer_id: new ObjectId(freelancer_id),
+    });
+
+    if (!existingTimer || existingTimer.length === 0) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Timer not found for the specified job and freelancer'
+      );
+    }
+
+    const currentDate = new Date();
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0
+    );
+    startOfMonth.setHours(0, 0, 0, 0);
+    endOfMonth.setHours(23, 59, 59, 999);
+
+    const timerEntriesInMonth = existingTimer.filter(timerEntry => {
+      const entryStartDate = new Date(timerEntry.start_date);
+      return entryStartDate >= startOfMonth && entryStartDate <= endOfMonth;
+    });
+
+    const totalMonthTime = timerEntriesInMonth.reduce((total, timerEntry) => {
+      const duration = timerEntry.timer.reduce((entryTotal, entry) => {
+        const startTime = Number(entry.start_time);
+        const endTime = Number(entry.end_time);
+        return entryTotal + (endTime - startTime);
+      }, 0);
+
+      return total + duration;
+    }, 0);
+
+    return {
+      totalMonthTime,
+    };
+  } catch (error) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Internal Server Error');
+  }
+};
 
 
 
@@ -241,4 +343,6 @@ export const timerService = {
   endTimer,
   uploadScreenshot,
   getDailyReport,
+  getWeeklyReport,
+  getMonthlyReport,
 };
